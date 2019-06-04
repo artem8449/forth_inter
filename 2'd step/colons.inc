@@ -58,8 +58,27 @@ colon "file-read-char", file_read_char
 ; ( fd char - ) print char to screan 
 colon "file-write-char", file_write_char
   dq xt_swap, xt_to_r, xt_to_r
-  dq xt_stack_cell, xt_dup, xt_from_r, xt_swap, xt_write_char
+  dq xt_stack_cell, xt_dup, xt_from_r, xt_swap, xt_save_char
   dq xt_from_r, xt_swap, xt_lit, 1, xt_sys_write, xt_drop, xt_drop, xt_exit
 
+colon "string-length", string_length
+      dq xt_dup
+.loop:
+      dq xt_dup, xt_fetch_char
+      branch0 .exit
+      dq xt_inc
+      branch .loop
+.exit:
+	  dq xt_swap, xt_sub, xt_exit
+  
+; print carriage return sym
+colon "print-cr", print_cr
+	dq xt_lit, 1, xt_lit, 10, xt_file_write_char, xt_exit
 
+;  ( str count - ) print count in str 
+colon "print-string-counted", print_string_counted
+	dq xt_to_r, xt_to_r, xt_lit, 1, xt_from_r, xt_from_r, xt_sys_write, xt_drop, xt_exit
 
+; ( str -- ) count str length and print str 
+colon "print-string", print_string
+	dq xt_dup, xt_string_length, xt_print_string_counted, xt_exit

@@ -150,7 +150,7 @@ native "!", write
     mov [rax], rdx
     jmp next
 
-native "c!", write_char
+native "c!", save_char
     pop rax
     pop rdx
     mov [rax], dl
