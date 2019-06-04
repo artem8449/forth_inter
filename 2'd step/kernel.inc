@@ -64,3 +64,21 @@ native ">", greater
 .greater:
 	push 1
 	jmp next
+	
+;some comands to wark with stack
+native 'drop', drop
+	add rsp, 8
+	jmp next
+
+native 'swap', swap
+    pop rdx
+    pop rax
+    push rdx
+    push rax
+    jmp next
+	
+native 'dup', dup
+	push qword [rsp]
+	jmp next
+	
+	
