@@ -136,7 +136,41 @@ native "land", land
 	jmp next
 .false:
 	push 0
-	jmp next	
+	jmp next
+
+;words work with memory
+native "@", fetch
+    pop rax
+    push qword[rax]
+    jmp next
+
+native "!", write
+    pop rax
+    pop rdx
+    mov [rax], rdx
+    jmp next
+
+native "c!", write_char
+    pop rax
+    pop rdx
+    mov [rax], dl
+    jmp next
+
+native "c@", fetch_char
+    pop rax
+    movzx rax, byte [rax]
+    push rax
+    jmp next
+	
+native "forth-dp", forth_dp
+	push dp
+	jmp next
+	
+native "execute", execute
+    pop rax
+    mov w, rax
+    jmp [rax]	
+	
 	
 
 	
