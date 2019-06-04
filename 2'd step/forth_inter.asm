@@ -23,6 +23,7 @@ stack_start: dq 0	;stores a saved address of data stack
 section .text
 
 %include "kernel.inc"
+%include "colons.inc"
 
 _start:
 	mov rstack, rstack_start
