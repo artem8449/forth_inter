@@ -5,9 +5,9 @@ native "+", plus
 	jmp next
 
 native "*", mul
-	pop rax
-	mul qword[rsp]
 	pop rdx
+	pop rax
+	imul rdx
 	push rax
 	jmp next
 
@@ -15,7 +15,7 @@ native "/", div
 	pop rcx
 	pop rax
 	cqo
-	div rcx
+	idiv rcx
 	push rax
 	jmp next
 
@@ -23,7 +23,7 @@ native "%", div_rem
 	pop rcx
 	pop rax
 	cqo
-	div rcx
+	idiv rcx
 	push rdx
 	jmp next
 
@@ -33,15 +33,18 @@ native "-", sub
 	jmp next
 
 native "=", equal
-	pop rax
-	pop rdx
-	cmp rax, rdx
-	je .equals
-	push 0
-	jmp next
-.equals:
-	push 1
-	jmp next
+  pop rdx
+  pop rax
+  cmp rax, rdx
+  jne .nequals
+  xor rax, rax
+  mov rax, 1
+  push rax
+  jmp next
+.nequals:
+  xor rax, rax
+  push rax
+  jmp next
 
 native "<", less
 	pop rdx
@@ -65,7 +68,7 @@ native ">", greater
 	push 1
 	jmp next
 	
-;some comands to wark with stack
+;some comands to work with stack
 native 'drop', drop
 	add rsp, 8
 	jmp next
