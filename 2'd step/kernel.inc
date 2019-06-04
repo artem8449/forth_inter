@@ -84,4 +84,60 @@ native 'dup', dup
 	push qword [rsp]
 	jmp next
 	
+;comands to work with returnment stack
+native ">r", to_r
+    pop rax
+    rpush rax
+    jmp next
+
+native "r>", from_r
+    rpop rax
+    push rax
+    jmp next
+
+native "r@", r_fetch
+    push qword [rstack]
+    jmp next
+	
+
+;logic operators 
+native 'not', not
+  pop rax
+  test rax, rax
+  jz .setone
+  xor rax, rax
+  push rax
+  jmp next
+  .setone:
+    xor rax, rax
+    mov rax, 1
+    push rax
+    jmp next
+	
+native 'lor', lor
+  pop rax
+  pop rdx
+  test rax, rax
+  jnz .yes
+  push rdx
+  jmp next
+  .yes:
+    push rax
+    jmp next
+
+native "land", land
+	pop rax
+	pop rdx
+	test rax, rax
+	jz .false
+	test rdx, rdx
+	jz .false
+	push 1
+	jmp next
+.false:
+	push 0
+	jmp next	
+	
+
+	
 	
