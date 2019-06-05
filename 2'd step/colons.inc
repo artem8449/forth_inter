@@ -425,4 +425,19 @@ colon "print-uint", print_uint
 		branch .print_loop
 	.exit:
 		dq xt_from_r, xt_drop, xt_exit
+		
+;comand to print stack 
+colon ".S", show_stack_s
+		dq  xt_sp
+		dq xt_to_r
+	.loop:
+		dq xt_r_fetch, xt_forth_stack_base, xt_less
+		branch0 .exit
+		dq xt_r_fetch, xt_fetch, xt_print_uint, xt_print_cr
+		dq xt_from_r
+		dq xt_lit, 8, xt_plus
+		dq xt_to_r
+		branch .loop
+	.exit:
+		dq xt_from_r, xt_drop, xt_exit
 	  
