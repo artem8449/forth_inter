@@ -184,5 +184,44 @@ colon ":", colon
 colon ";", semicolon, 1
 		dq xt_lit, STATE_INTERPRET, xt_state, xt_save
 		dq xt_lit, xt_exit, xt_comma, xt_exit
-  
-  
+
+;check char to digit save flag 		
+colon "char-is-digit", char_is_digit
+	  dq xt_to_r
+	  dq xt_r_fetch, xt_lit, '9'+1, xt_less
+	  dq xt_lit, '0'-1, xt_r_fetch, xt_less, xt_land
+	  dq xt_from_r, xt_drop, xt_exit
+
+;go tp iz_zero if and of up of stack 0	  
+colon "drop0", drop0
+	  dq xt_dup
+	  branch0 .is_zero
+	  dq xt_exit
+	  .is_zero:
+	  dq xt_drop, xt_exit
+
+;convert ascii code to digit 
+colon "char-to-digit", char_to_digit
+	  dq xt_lit, '0', xt_sub, xt_exit
+	
+; ( buf -- num? len ) 
+colon "string-parse-unsigned-number", string_parse_unsigned_number
+	  dq xt_dup, xt_to_r
+	  dq xt_lit, 0, xt_to_r
+.loop:
+	  dq xt_dup, xt_fetch_char, xt_dup, xt_char_is_digit
+	  branch0 .end
+	  dq xt_char_to_digit
+	  dq xt_lit, 10, xt_from_r, xt_mul, xt_plus, xt_to_r
+	  dq xt_inc
+	  branch .loop
+  .end:
+	  dq xt_drop, xt_from_r, xt_swap, xt_from_r, xt_sub, xt_drop0, xt_exit
+
+;check that num less than 0
+colon "neg", neg
+	  dq xt_lit, 0, xt_swap, xt_sub, xt_exit
+
+;increment some digit on mem 
+colon "inc", inc
+      dq xt_lit, 1, xt_plus, xt_exit    
