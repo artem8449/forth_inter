@@ -339,6 +339,56 @@ colon "forth-interpret-fd", forth_interpret_fd
 ;chech to go swith interpretator mod	
 colon "forth-xt-is-immediate", forth_xt_is_immediate
     dq xt_lit, 1, xt_sub, xt_fetch_char, xt_exit
+	
+; ( str - ) the interpreter itself accepts tokens from the prasser, selects the mode of operation and saves and executes the words
+colon "forth-interpret", forth_interpret
+.start:
+    ; ( inbuf )
+    dq xt_dup, xt_forth_find_word         ; find in dict
+    branch0 .number                       ; ( inbuf dictaddr? 0/1 )
+    dq xt_swap, xt_drop, xt_forth_cfa     ; ( xt )
+
+    ; if not compiling
+    dq xt_state, xt_fetch
+    branch0 .interpreting
+
+    dq xt_dup, xt_forth_xt_is_immediate, xt_not
+    branch0 .interpreting
+
+.compiling:
+    dq xt_comma, xt_exit
+.interpreting:
+    dq xt_execute, xt_exit
+
+.number: ; ( inbuf )
+    dq xt_dup, xt_string_parse_number      ; ( inbuf num? 0/len )
+    branch0 .no_word
+
+    ; ( inbuf num )
+    dq xt_swap, xt_drop
+    dq xt_state, xt_fetch                  ; if interpreting, that's it
+    branch0 .exit
+
+    dq xt_forth_follows_branch, xt_not
+    branch0 .is_branch
+
+.not_branch:
+    dq xt_lit, xt_lit, xt_comma
+.is_branch: ; ( num prev_xt )
+    dq xt_comma, xt_exit
+
+.no_word: ; ( inbuf )
+  dq xt_lit, msg.no_such_word, xt_print_string, xt_print_string, xt_print_cr
+
+.exit:
+    dq xt_exit
+	
+colon "trap", trap
+    dq xt_lit, wh_trap + 9, xt_print_string, xt_print_cr, xt_exit
+
+;set start state to machine
+forth_init:
+  dq xt_lit, 0, xt_forth_interpret_fd, xt_bye
 
 
 	  
