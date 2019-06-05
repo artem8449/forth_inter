@@ -113,6 +113,20 @@ native 'not', not
     mov rax, 1
     push rax
     jmp next
+
+native "and", bit_and
+	pop rax
+	pop rdx
+	and rdx, rax
+	push rax
+	jmp next
+
+native "or", bit_or
+	pop rax
+	pop rdx
+	or rax, rdx
+	push rax
+	jmp next
 	
 native 'lor', lor
   pop rax
