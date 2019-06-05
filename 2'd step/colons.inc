@@ -148,3 +148,41 @@ colon "2dup", ddup
 
 colon "2inc", dinc
 	dq xt_to_r, xt_inc, xt_from_r, xt_inc, xt_exit
+
+;compare strs and ret 1 (yes) or 0 (no)	
+colon "string-equals", string_equals
+.start:
+	  dq xt_ddup, xt_fetch_char, xt_swap, xt_fetch_char, xt_equal
+	  branch0 .no
+	  dq xt_dup, xt_fetch_char
+	  branch0 .yes
+	  dq xt_dinc
+	  branch .start
+.yes:
+	dq xt_drop, xt_drop, xt_lit, 1, xt_exit
+.no:
+	dq xt_drop, xt_drop, xt_lit, 0, xt_exit
+  
+  ; ( dest source - ) copy str to adr o up of stack
+colon "string-copy", string_copy
+	.loop:
+		dq xt_ddup, xt_fetch_char, xt_to_r, xt_r_fetch, xt_swap, xt_save_char
+		dq xt_dinc, xt_from_r, xt_not
+	branch0 .loop
+				dq xt_drop, xt_drop, xt_exit
+
+;read colon word in compile state of machine and save them 				
+colon ":", colon
+  .restart:
+		dq xt_fd, xt_fetch, xt_lit, word_buf, xt_file_read_word
+		branch0 .restart
+		dq xt_lit, 0, xt_lit, word_buf, xt_forth_create
+		dq xt_lit, STATE_COMPILE, xt_state, xt_save
+		dq xt_lit, i_docol, xt_comma, xt_exit
+
+;exit from compile mod to  interpretator 
+colon ";", semicolon, 1
+		dq xt_lit, STATE_INTERPRET, xt_state, xt_save
+		dq xt_lit, xt_exit, xt_comma, xt_exit
+  
+  
