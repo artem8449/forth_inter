@@ -257,4 +257,50 @@ colon "string-parse-number", string_parse_number
 
 ;module to forth interpretator and words to work with dictinory 
 
+;add name to word on dictinory
+colon "forth-dict-word-name", forth_dict_word_name
+	  dq xt_lit, 9, xt_plus, xt_exit
+
+;word in dictinory ? if yes ret 1
+colon "forth-find-word", forth_find_word
+	  dq xt_to_r, xt_last_word, xt_fetch
+	  dq xt_state, xt_fetch
+	  branch0 .loop
+	  dq xt_fetch
+.loop:
+	  dq xt_dup
+	  branch0 .not_found
+
+	  dq xt_dup, xt_forth_dict_word_name, xt_r_fetch, xt_string_equals, xt_not
+	  branch0 .found
+
+	  dq xt_fetch
+	  branch .loop
+.found:
+	  dq xt_lit, 1
+.not_found:
+      dq xt_from_r, xt_drop, xt_exit
+
+;read word and pale it xt adress on stack	  
+colon "'", forth_tick, 1
+	  dq xt_fd, xt_fetch, xt_lit, word_buf, xt_file_read_word
+	  branch0 .eof
+	  dq xt_lit, word_buf, xt_forth_find_word
+	  branch0 .no_word
+	  dq xt_forth_cfa, xt_state
+	  branch0 .interp
+	  dq xt_lit, xt_lit, xt_comma, xt_comma
+.interp:
+	  dq xt_exit
+.no_word:
+      dq xt_lit, msg.no_such_word, xt_print_string, xt_print_string, xt_print_cr, xt_exit
+.eof:
+      dq xt_drop, xt_exit
+
+;add info to word place in dictinory	  
+colon "forth-cfa", forth_cfa
+	  dq xt_lit, 9, xt_plus
+	  dq xt_dup, xt_string_length, xt_plus
+	  dq xt_lit, 2, xt_plus, xt_exit
+
 	  
