@@ -82,3 +82,51 @@ colon "print-string-counted", print_string_counted
 ; ( str -- ) count str length and print str 
 colon "print-string", print_string
 	dq xt_dup, xt_string_length, xt_print_string_counted, xt_exit
+
+;check sym to white space (whith tab sym)	
+colon "char-is-space", char_is_space
+  dq xt_to_r
+  dq xt_r_fetch, xt_lit,  ' ', xt_equal
+  dq xt_r_fetch, xt_lit, 10, xt_equal, xt_lor
+  dq xt_r_fetch, xt_lit, 13, xt_equal, xt_lor
+  dq xt_r_fetch, xt_lit, 9, xt_equal, xt_lor
+  dq xt_from_r,  xt_lit, '\t', xt_equal, xt_lor, xt_exit
+	
+; ( addr - ) add 0 terminate to str 
+colon "string-terminate", string_terminate
+	dq xt_lit, 0, xt_swap, xt_save_char, xt_exit
+	
+;  ( fd buffer - ) word to read word whith check space 
+colon "file-read-word", file_read_word
+	dq xt_dup, xt_to_r, xt_to_r
+
+;miss all unusual space 
+.read_space:
+	  dq xt_dup, xt_file_read_char
+	  branch0 .eof
+
+	  dq xt_dup, xt_char_is_space
+	  branch0 .commit
+
+	  dq xt_drop
+	  branch .read_space
+
+;read unspace sym 
+.read:
+	  dq xt_dup, xt_file_read_char
+	  branch0 .eof
+
+	  dq xt_dup, xt_char_is_space, xt_not
+	  branch0 .end
+;save now sym and go to next 
+.commit:
+	  dq xt_r_fetch, xt_save_char
+	  dq xt_from_r, xt_inc, xt_to_r
+	  branch .read
+
+.end:
+	dq xt_drop
+;add 0 terminate to str 
+.eof:
+	  dq xt_drop, xt_r_fetch, xt_string_terminate
+	  dq xt_from_r, xt_from_r, xt_sub, xt_exit
