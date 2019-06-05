@@ -5,6 +5,10 @@ global _start
 %define w r14		;sub commands pointer
 %define rstack r13	;return stack pointer
 
+section .text
+
+%include "kernel.inc"
+%include "colons.inc"
 
 section .bss
 
@@ -21,9 +25,6 @@ dp: dq user_mem		;current global data pointer
 stack_start: dq 0	;stores a saved address of data stack
 
 section .text
-
-%include "kernel.inc"
-%include "colons.inc"
 
 _start:
 	mov rstack, rstack_start

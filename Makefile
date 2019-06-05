@@ -1,16 +1,16 @@
 ASM         = nasm
-ASMFLAGS    = -felf64 -g -Isrc/ 
+ASM_FLAGS   = -felf64 -g -I2d_step/
 LINKER      = ld
 
-all: bin/forth_iner
+all: bin/forth_inter
 	
-bin/forth_iner: objects/forth_iner.o 
+bin/forth_inter: objects/forth_inter.o 
 	mkdir -p bin 
-	$(LINKER) -o bin/forth_iner  $(LINKERFLAGS) -o bin/forth_iner objects/forth_iner.o $(LIBS)
+	$(LINKER) -o bin/forth_inter  $(LINKERFLAGS) -o bin/forth_inter objects/forth_inter.o $(LIBS)
 
-objects/forth_iner.o: 2'd_step/forth_iner.asm 2'd_step/macro.inc 2'd_step/colons.inc 
+objects/forth_inter.o: 2d_step/forth_inter.asm 2d_step/macro.inc 2d_step/colons.inc 
 	mkdir -p objects
-	$(ASM) $(ASMFLAGS) 2'd_step/forth_iner.asm -o objects/forth_iner.o
+	$(ASM) $(ASM_FLAGS) 2d_step/forth_inter.asm -o objects/forth_inter.o
 
 clean: 
 	rm -rf bin objects
