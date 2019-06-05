@@ -391,4 +391,7 @@ forth_init:
   dq xt_lit, 0, xt_forth_interpret_fd, xt_bye
 
 
+;add colon words to .S (which nead to prtint stack on screan: print-char, digit-to-char)
+
+
 	  
