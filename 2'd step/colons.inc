@@ -130,3 +130,21 @@ colon "file-read-word", file_read_word
 .eof:
 	  dq xt_drop, xt_r_fetch, xt_string_terminate
 	  dq xt_from_r, xt_from_r, xt_sub, xt_exit
+
+;save , and go to next token 	  
+colon ",", comma
+	  dq xt_here, xt_fetch, xt_save
+	  dq xt_here, xt_fetch, xt_lit, 8, xt_plus
+	  dq xt_here, xt_save, xt_exit
+
+colon "c,", char_comma
+	  dq xt_here, xt_fetch, xt_save_char
+	  dq xt_here, xt_fetch, xt_inc
+	  dq xt_here, xt_save, xt_exit
+
+;double call dup or inc 	  
+colon "2dup", ddup
+	dq xt_to_r, xt_dup, xt_r_fetch, xt_swap, xt_from_r, xt_exit
+
+colon "2inc", dinc
+	dq xt_to_r, xt_inc, xt_from_r, xt_inc, xt_exit

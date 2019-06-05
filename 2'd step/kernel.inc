@@ -144,7 +144,7 @@ native "@", fetch
     push qword[rax]
     jmp next
 
-native "!", write
+native "!", save
     pop rax
     pop rdx
     mov [rax], rdx
