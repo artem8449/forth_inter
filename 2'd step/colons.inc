@@ -388,10 +388,41 @@ colon "trap", trap
 
 ;set start state to machine
 forth_init:
-  dq xt_lit, 0, xt_forth_interpret_fd, xt_bye
+	dq xt_lit, 0, xt_forth_interpret_fd, xt_bye
 
 
 ;add colon words to .S (which nead to prtint stack on screan: print-char, digit-to-char)
 
+;convert digit to char to print
+colon "digit-to-char", digit_to_char
+	dq xt_lit, 0x30, xt_plus, xt_exit
 
+;send char to print 	
+colon "print-char", print_char
+	dq xt_lit, 1, xt_swap, xt_file_write_char, xt_exit
+
+;gets a sequence of values ​​converts them to characters and displays 	
+colon "print-uint", print_uint
+		dq xt_to_r
+		dq xt_sp
+		dq xt_from_r, xt_swap
+		dq xt_to_r, xt_to_r
+	.loop:
+		dq xt_r_fetch
+	   	dq xt_lit, 10, xt_div_rem
+		dq xt_from_r
+		dq xt_lit, 10, xt_div
+		dq xt_dup
+		branch0 .print
+		dq xt_to_r
+		branch .loop
+	.print:
+		dq xt_drop
+	.print_loop:
+		dq xt_sp, xt_r_fetch, xt_less
+		branch0 .exit
+		dq xt_digit_to_char, xt_print_char
+		branch .print_loop
+	.exit:
+		dq xt_from_r, xt_drop, xt_exit
 	  
