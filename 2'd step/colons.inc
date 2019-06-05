@@ -131,12 +131,12 @@ colon "file-read-word", file_read_word
 	  dq xt_drop, xt_r_fetch, xt_string_terminate
 	  dq xt_from_r, xt_from_r, xt_sub, xt_exit
 
-;save , and go to next token 	  
+;save up of stack to mem where saved new word, and go to next token 	  
 colon ",", comma
 	  dq xt_here, xt_fetch, xt_save
 	  dq xt_here, xt_fetch, xt_lit, 8, xt_plus
 	  dq xt_here, xt_save, xt_exit
-
+;save byte up of stack to mem where saved new word
 colon "c,", char_comma
 	  dq xt_here, xt_fetch, xt_save_char
 	  dq xt_here, xt_fetch, xt_inc
