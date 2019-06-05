@@ -224,4 +224,37 @@ colon "neg", neg
 
 ;increment some digit on mem 
 colon "inc", inc
-      dq xt_lit, 1, xt_plus, xt_exit    
+      dq xt_lit, 1, xt_plus, xt_exit  
+
+; ( buf -- num? len ) check type of char num and parse 
+colon "string-parse-number", string_parse_number
+	  dq xt_dup, xt_fetch_char, xt_dup, xt_char_is_digit, xt_not
+	  branch0 .unsigned
+	  dq xt_dup, xt_lit, '-', xt_equal, xt_not
+	  branch0 .negative
+
+	  dq xt_dup, xt_lit, '+', xt_equal, xt_not
+	  branch0 .positive
+
+.negative:
+	  dq xt_drop
+	  dq xt_inc, xt_string_parse_unsigned_number
+	  dq xt_dup
+	  branch0 .error
+	  dq xt_inc
+	  dq xt_swap, xt_neg, xt_swap, xt_exit
+.positive:
+	  dq xt_drop
+	  dq xt_inc, xt_string_parse_unsigned_number
+	  dq xt_dup
+  branch0 .error
+	  dq xt_inc, xt_exit
+.unsigned:
+	  dq xt_drop, xt_string_parse_unsigned_number, xt_exit 
+.error:
+      dq xt_drop, xt_lit, 0, xt_exit	
+
+
+;module to forth interpretator and words to work with dictinory 
+
+	  
