@@ -302,5 +302,43 @@ colon "forth-cfa", forth_cfa
 	  dq xt_lit, 9, xt_plus
 	  dq xt_dup, xt_string_length, xt_plus
 	  dq xt_lit, 2, xt_plus, xt_exit
+	  
+; ( flags name - ) prepare macjine to add new word on dictinory
+colon "forth-create", forth_create
+	  dq xt_here, xt_fetch                ; word start
+	  dq xt_last_word, xt_fetch, xt_comma ; fill `link`
+	  dq xt_last_word, xt_save           ; update `last_word`
+	  dq xt_lit, 0, xt_char_comma
+	  dq xt_dup, xt_here, xt_fetch, xt_swap, xt_string_copy
+	  dq xt_string_length, xt_here, xt_fetch, xt_plus, xt_inc, xt_here, xt_save
+	  dq xt_char_comma
+	  dq xt_exit
+
+;check that we have word after branch or branch0 
+colon "forth-follows-branch", forth_follows_branch
+	  dq xt_here, xt_fetch, xt_lit, 8, xt_sub, xt_fetch
+	  dq xt_dup, xt_lit, xt_branch0, xt_equal, xt_swap
+	  dq xt_lit, xt_branch, xt_equal, xt_lor, xt_exit
+  
+ ; (  fd -- ) file readet to forth 
+colon "forth-interpret-fd", forth_interpret_fd
+    dq xt_lit, xt_fd, xt_fetch, xt_to_r
+    dq xt_fd, xt_save
+
+    .loop:
+    dq xt_fd, xt_fetch, xt_lit, word_buf, xt_file_read_word
+    branch0 .eof
+
+    dq xt_lit, word_buf, xt_forth_interpret
+
+    branch .loop
+
+    .eof:
+    dq xt_from_r, xt_fd, xt_save, xt_exit
+
+;chech to go swith interpretator mod	
+colon "forth-xt-is-immediate", forth_xt_is_immediate
+    dq xt_lit, 1, xt_sub, xt_fetch_char, xt_exit
+
 
 	  
