@@ -5,8 +5,8 @@
 : else ' branch , here 0 , swap here swap !  ; IMMEDIATE
 : then here swap ! ; IMMEDIATE
 
-: while here ; IMMEDIATE
-: do ' 0branch , , ; IMMEDIATE
+: do here ; IMMEDIATE
+: while ' 0branch , , ; IMMEDIATE
 
 
 : for 
